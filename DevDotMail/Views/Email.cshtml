@@ -1,0 +1,11 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<DevDotMail.Email>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3>@Model.Subject</h3>
+        <span class="text-right">@Model.Date</span>
+    </div>
+    <div class="panel-body">
+        @Model.Body
+    </div>
+</div>

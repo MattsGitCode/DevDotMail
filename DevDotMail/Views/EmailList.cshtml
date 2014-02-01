@@ -1,0 +1,56 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<DevDotMail.EmailListModel>
+
+@helper PagerItem(int page)
+{
+    <li class="@(Model.CurrentPage == page ? "active" : null)">
+        <a href="@Model.Builder.PageUrl(page)">@page</a>
+    </li>
+}
+
+@helper Pager()
+{
+    <div class="text-center">
+        <ul class="pagination">
+            @if (Model.ShowFirstPageLink)
+            {
+                @PagerItem(1)
+                <li><span>...</span></li>
+            }
+            @foreach (var page in Model.PagesToLink)
+            {
+                @PagerItem(page)
+            }
+            @if (Model.ShowLastPageLink)
+            {
+                <li><span>...</span></li>
+                @PagerItem(Model.TotalPages)
+            }
+        </ul>
+
+
+    </div>
+}
+
+@Pager()
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>To</th>
+            <th>Subject</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var m in Model.Emails)
+        {
+            <tr>
+                <td><a href="@Model.Builder.RecipientUrl(m.To)">@m.To</a></td>
+                <td><a href="@Model.Builder.EmailUrl(m.Id)">@m.Subject</a></td>
+                <td>@m.Date</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@Pager()
