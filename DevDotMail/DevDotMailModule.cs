@@ -24,7 +24,7 @@ namespace DevDotMail
                 
                 var emails = filtered
                     .OrderByDescending(x => x.Date)
-                    .Skip((builder.PageSize - 1) * builder.PageSize)
+                    .Skip((builder.Page - 1) * builder.PageSize)
                     .Take(builder.PageSize)
                     .ToList();
                 
