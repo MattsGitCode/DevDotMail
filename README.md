@@ -17,7 +17,7 @@ The first thing to do it modify your app.config or web.config to have it drop yo
 	</smtp>
 
 
-Next up, get DevDotMail running in IIS, it's a standard affair, nothing special required.
+Next up, get DevDotMail running in IIS. You must _set your application pool to run in 32-bit mode_. (Right click the app pool, advanced settings, set enable 32-bit applications to true)
 
 Finally, alter the web.config to tell it where to find your emails
 
