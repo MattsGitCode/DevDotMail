@@ -3,6 +3,7 @@ using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Web;
 
@@ -21,7 +22,13 @@ namespace DevDotMail
         {
             base.ConfigureApplicationContainer(container);
 
-            var db = new SQLiteConnection(@"C:\Users\Matt\Documents\visual studio 2013\Projects\DevDotMail\DevDotMail\bin\devdotmail.db", SQLiteOpenFlags.Create | SQLiteOpenFlags.ReadWrite);
+            string databaseDir = Path.Combine(RootPathProvider.GetRootPath(), "App_Data");
+            string databaseFile = Path.Combine(databaseDir, "devdotmail.db");
+
+            if (!Directory.Exists(databaseDir))
+                Directory.CreateDirectory(databaseDir);
+
+            var db = new SQLiteConnection(databaseFile, SQLiteOpenFlags.Create | SQLiteOpenFlags.ReadWrite);
             container.Register(db);
 
             db.CreateTable<Email>();
