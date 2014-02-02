@@ -18,7 +18,8 @@ namespace DevDotMail
         {
             this.db = db;
             this.folderToNames = folderToNames;
-            mailFolderListener = new MailFolderListener(folderToNames.Keys, ParseMail);
+            mailFolderListener = new MailFolderListener(folderToNames.Keys, ParseMail, false);
+            mailFolderListener.CheckFoldersNow();
         }
 
         public void Dispose()
@@ -51,6 +52,11 @@ namespace DevDotMail
                 };
                 db.Insert(email);
             }
+        }
+
+        public void CheckAndParse()
+        {
+            mailFolderListener.CheckFoldersNow();
         }
     }
 }

@@ -9,33 +9,29 @@ namespace DevDotMail
 {
     public class MailFolderListener : IDisposable
     {
+        IEnumerable<string> folders;
         IEnumerable<FileSystemWatcher> fileSystemWatchers;
         Action<string, Stream> emailFoundAction;
 
-        public MailFolderListener(IEnumerable<string> folders, Action<string, Stream> emailFoundAction)
+        public MailFolderListener(IEnumerable<string> folders, Action<string, Stream> emailFoundAction, bool listen)
         {
+            this.folders = folders;
             this.emailFoundAction = emailFoundAction;
 
-            fileSystemWatchers = folders.Select(f =>
+            if (listen)
             {
-                var watcher = new FileSystemWatcher(f)
+                fileSystemWatchers = folders.Select(f =>
                 {
-                    EnableRaisingEvents = true,
-                };
+                    var watcher = new FileSystemWatcher(f);
 
-                watcher.Created += FileWatcherEvent;
-                watcher.Changed += FileWatcherEvent;
+                    watcher.Created += FileWatcherEvent;
+                    watcher.Changed += FileWatcherEvent;
 
-                return watcher;
-            });
+                    watcher.EnableRaisingEvents = true;
 
-            folders.ToList().ForEach(folder =>
-            {
-                Directory.GetFiles(folder).ToList().ForEach(file =>
-                {
-                    TryFile(folder, file);
+                    return watcher;
                 });
-            });
+            }
         }
 
         public void Dispose()
@@ -54,6 +50,17 @@ namespace DevDotMail
         {
             string folder = ((FileSystemWatcher)sender).Path;
             TryFile(folder, e.FullPath);
+        }
+
+        public void CheckFoldersNow()
+        {
+            folders.ToList().ForEach(folder =>
+            {
+                Directory.GetFiles(folder).ToList().ForEach(file =>
+                {
+                    TryFile(folder, file);
+                });
+            });
         }
 
         void TryFile(string folder, string filePath)

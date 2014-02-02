@@ -11,11 +11,17 @@ namespace DevDotMail
 {
     public class Bootstrapper : DefaultNancyBootstrapper
     {
-        public static MailParser mailParser;
-
         protected override void ApplicationStartup(Nancy.TinyIoc.TinyIoCContainer container, Nancy.Bootstrapper.IPipelines pipelines)
         {
             base.ApplicationStartup(container, pipelines);
+
+            pipelines.BeforeRequest += ctx =>
+            {
+                var mailParser = container.Resolve<MailParser>();
+                mailParser.CheckAndParse();
+
+                return null;
+            };
         }
 
         protected override void ConfigureApplicationContainer(Nancy.TinyIoc.TinyIoCContainer container)
@@ -41,10 +47,7 @@ namespace DevDotMail
                     key => ConfigurationManager.AppSettings[key],
                     key => key.Substring(12));
 
-            if (mailParser == null)
-            {
-                mailParser = new MailParser(folderToName, db);
-            }
+            var mailParser = new MailParser(folderToName, db);
 
             container.Register(mailParser);
         }
