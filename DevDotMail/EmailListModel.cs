@@ -29,7 +29,7 @@ namespace DevDotMail
             CurrentPage = builder.Page;
 
             PageStartRecord = (CurrentPage - 1) * builder.PageSize + 1;
-            PageLastRecord = PageStartRecord + Emails.Count;
+            PageLastRecord = PageStartRecord + Emails.Count - 1;
 
             TotalPages = total / builder.PageSize + (((total % builder.PageSize) == 0) ? 0 : 1);
 
