@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace DevDotMail
@@ -47,6 +48,16 @@ namespace DevDotMail
 
                 if (email == null)
                     return Negotiate.WithStatusCode(HttpStatusCode.NotFound);
+
+                if (Request.Url.Query == "?original")
+                {
+                    string safeSubject = Regex.Replace(email.Subject, "[^\\w-_0-9]", " ");
+                    safeSubject = safeSubject.Replace("  ", " ");
+                    string fileName = safeSubject + ".eml";
+
+                    var stream = File.OpenRead(Path.Combine(rootPathProvider.GetRootPath(), "App_Data", email.OriginalMailFileId));
+                    return Response.FromStream(stream, "message/rfc822").AsAttachment(fileName);
+                }
 
                 if (email.HasAttachments)
                 {

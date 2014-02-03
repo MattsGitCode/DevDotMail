@@ -36,7 +36,16 @@ namespace DevDotMail
         void ParseMail(string folder, Stream fileStream)
         {
             var msg = MimeMessage.Load(fileStream);
-            var email = new Email();
+            var email = new Email
+            {
+                OriginalMailFileId = Guid.NewGuid().ToString()
+            };
+
+            fileStream.Position = 0;
+            using (var destinationStream = getAttachmentStreamForSaving(email.OriginalMailFileId))
+            {
+                fileStream.CopyTo(destinationStream);
+            }
 
             ExtractMimeMessageIntoEmail(msg, email);
 
@@ -51,7 +60,7 @@ namespace DevDotMail
 
         void ExtractMimeMessageIntoEmail(MimeMessage msg, Email email)
         {
-            email.Date = msg.Date.Date;
+            email.Date = msg.Date.LocalDateTime;
             email.To = msg.To.ToString();
             email.Subject = msg.Subject;
 

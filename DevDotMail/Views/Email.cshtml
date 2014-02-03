@@ -1,9 +1,10 @@
 ﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<DevDotMail.Email>
 
 <div class="panel panel-default">
-    <div class="panel-heading">
-        <h3>@Model.Subject</h3>
-        <span class="text-right">@Model.Date</span>
+    <div class="panel-heading clearfix text-center">
+        <span class="pull-left">@Model.Date</span>
+        <a class="pull-right" href="?original"><span class="glyphicon glyphicon-envelope"></span>Download Original Email</a>
+        <h1 class="panel-title">@Model.Subject</h1>
     </div>
     <div class="panel-body">
         @if (Model.IsBodyHtml)

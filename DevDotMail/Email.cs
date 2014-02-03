@@ -13,6 +13,9 @@ namespace DevDotMail
 
         public string Folder { get; set; }
 
+        public string OriginalMailFileId { get; set; }
+
+        [Indexed]
         public DateTime Date { get; set; }
         [MaxLength(100)]
         public string From { get; set; }
