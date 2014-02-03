@@ -41,5 +41,11 @@ namespace DevDotMail
 
             return new NonEncodedHtmlString(bodyWithEmbeddedImages);
         }
+
+        public static IHtmlString ToHtmlCopyOfPlainText(this string text)
+        {
+            var html = Regex.Replace(text, "(((https?://)|(www)).*?)\\s", "<a href='$1'>$1</a>");
+            return new NonEncodedHtmlString(html);
+        }
     }
 }

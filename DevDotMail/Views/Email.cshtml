@@ -13,7 +13,7 @@
         }
         else
         {
-            @Model.Body
+            @Model.Body.ToHtmlCopyOfPlainText()
         }
     </div>
     @if (@Model.HasAttachments)
