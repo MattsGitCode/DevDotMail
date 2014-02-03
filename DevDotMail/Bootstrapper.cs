@@ -6,6 +6,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Web;
+using Nancy.Conventions;
 
 namespace DevDotMail
 {
@@ -38,6 +39,7 @@ namespace DevDotMail
             container.Register(db);
 
             db.CreateTable<Email>();
+            db.CreateTable<EmailAttachment>();
 
 
             var folderToName = ConfigurationManager.AppSettings.Keys
@@ -47,9 +49,18 @@ namespace DevDotMail
                     key => ConfigurationManager.AppSettings[key],
                     key => key.Substring(12));
 
-            var mailParser = new MailParser(folderToName, db);
+            Func<string, Stream> attachmentFileStreamGetter = fileId => File.Create(Path.Combine(databaseDir, fileId));
+
+            var mailParser = new MailParser(folderToName, db, attachmentFileStreamGetter);
 
             container.Register(mailParser);
+        }
+
+        protected override void ConfigureConventions(Nancy.Conventions.NancyConventions nancyConventions)
+        {
+            base.ConfigureConventions(nancyConventions);
+
+            nancyConventions.StaticContentsConventions.Add(StaticContentConventionBuilder.AddDirectory("fonts"));
         }
     }
 }

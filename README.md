@@ -5,7 +5,7 @@ DevDotMail is a simple web app that listens to configurable folders for new emai
 
 The main usage of DevDotMail is to accompany the development and testing of other .NET software that requires emails to be sent. Rather than using real email addresses in your software, which you can run out of quickly, you can use any email address and view the email in your browser.
 
-DevDotMail makes use of [NancyFX](http://nancyfx.org) and [OpaqueMail](http://opaquemail.org/)
+DevDotMail makes use of [NancyFX](http://nancyfx.org) and [MimeKit](/https://github.com/jstedfast/MimeKit)
 
 Get Started
 ===========

@@ -47,6 +47,13 @@ namespace DevDotMail
                 if (email == null)
                     return Negotiate.WithStatusCode(HttpStatusCode.NotFound);
 
+                if (email.HasAttachments)
+                {
+                    email.Attachments = db.Table<EmailAttachment>()
+                        .Where(x => x.EmailId == email.Id)
+                        .ToList();
+                }
+
                 return View[email];
             };
         }

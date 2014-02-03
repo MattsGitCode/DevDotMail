@@ -20,11 +20,6 @@
             {
                 @PagerItem(page)
             }
-            @if (Model.ShowLastPageLink)
-            {
-                <li><span>...</span></li>
-                @PagerItem(Model.TotalPages)
-            }
         </ul>
 
 
@@ -39,6 +34,7 @@
             <th>To</th>
             <th>Subject</th>
             <th>Date</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -46,8 +42,9 @@
         {
             <tr>
                 <td><a href="@Model.Builder.RecipientUrl(m.To)">@m.To</a></td>
-                <td><a href="@Model.Builder.EmailUrl(m.Id)">@m.Subject</a></td>
+                <td><a href="@Model.Builder.EmailUrl(m.Id)">@(m.Subject ?? "<no subject>")</a></td>
                 <td>@m.Date</td>
+                <td>@if(m.HasAttachments) { <span class="glyphicon glyphicon-paperclip"></span> }</td>
             </tr>
         }
     </tbody>

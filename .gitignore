@@ -1,5 +1,5 @@
 #DevDotMail specific
-devdotmail.db
+App_Data/
 
 
 ## Ignore Visual Studio temporary files, build results, and

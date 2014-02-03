@@ -6,6 +6,25 @@
         <span class="text-right">@Model.Date</span>
     </div>
     <div class="panel-body">
-        @Model.Body
+        @if (Model.IsBodyHtml)
+        {
+            @Model.Body.ToCrudeSafeHtml()
+        }
+        else
+        {
+            @Model.Body
+        }
     </div>
+    @if (@Model.HasAttachments)
+    {
+        <table class="table">
+            @foreach (var attachment in Model.Attachments)
+            {
+                <tr>
+                    <td>@attachment.FileName</td>
+                    <td>@attachment.FileSize.ToReadableSizeString()</td>
+                </tr>
+            }
+        </table>
+    }
 </div>

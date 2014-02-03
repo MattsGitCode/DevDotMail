@@ -18,7 +18,6 @@ namespace DevDotMail
         public int TotalPages { get; private set; }
         public IEnumerable<int> PagesToLink { get; private set; }
         public bool ShowFirstPageLink { get; private set; }
-        public bool ShowLastPageLink { get; private set; }
         
 
         public EmailListModel(List<Email> emails, int total, QueryBuilder builder)
@@ -34,7 +33,7 @@ namespace DevDotMail
 
             TotalPages = total / builder.PageSize + (((total % builder.PageSize) == 0) ? 0 : 1);
 
-            int pagesToShow = 10;
+            int pagesToShow = 5;
 
             if (pagesToShow > TotalPages)
             {
@@ -54,7 +53,6 @@ namespace DevDotMail
                 PagesToLink = Enumerable.Range(startPage, pagesToShow);
 
                 ShowFirstPageLink = startPage > 1;
-                ShowLastPageLink = startPage + pagesToShow - 1 < TotalPages;
             }
         }
     }

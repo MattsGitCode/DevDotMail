@@ -22,6 +22,16 @@ namespace DevDotMail
         public string Body { get; set; }
         public bool IsBodyHtml { get; set; }
 
+        public bool HasAttachments { get; set; }
+
         public bool IsArchived { get; set; }
+
+        [Ignore]
+        public List<EmailAttachment> Attachments { get; set; }
+
+        public Email()
+        {
+            Attachments = new List<EmailAttachment>();
+        }
     }
 }

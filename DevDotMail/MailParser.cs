@@ -1,4 +1,4 @@
-﻿using OpaqueMail.Net;
+﻿using MimeKit;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -13,11 +13,13 @@ namespace DevDotMail
         IDictionary<string, string> folderToNames;
         MailFolderListener mailFolderListener;
         SQLiteConnection db;
+        Func<string, Stream> getAttachmentStreamForSaving;
 
-        public MailParser(IDictionary<string, string> folderToNames, SQLiteConnection db)
+        public MailParser(IDictionary<string, string> folderToNames, SQLiteConnection db, Func<string, Stream> getAttachmentStreamForSaving)
         {
             this.db = db;
             this.folderToNames = folderToNames;
+            this.getAttachmentStreamForSaving = getAttachmentStreamForSaving;
             mailFolderListener = new MailFolderListener(folderToNames.Keys, ParseMail, false);
             mailFolderListener.CheckFoldersNow();
         }
@@ -33,30 +35,96 @@ namespace DevDotMail
 
         void ParseMail(string folder, Stream fileStream)
         {
-            string fileContent;
-            using (var reader = new StreamReader(fileStream))
+            var msg = MimeMessage.Load(fileStream);
+            var email = new Email();
+
+            ExtractMimeMessageIntoEmail(msg, email);
+
+            db.Insert(email);
+
+            foreach (var attachment in email.Attachments)
             {
-                fileContent = reader.ReadToEnd();
+                attachment.EmailId = email.Id;
+                db.Insert(attachment);
+            }
+        }
+
+        void ExtractMimeMessageIntoEmail(MimeMessage msg, Email email)
+        {
+            email.Date = msg.Date.Date;
+            email.To = msg.To.ToString();
+            email.Subject = msg.Subject;
+
+            if (msg.From.Count != 0)
+            {
+                email.From = msg.From.ToString();
+            }
+            else if (msg.Headers.Contains("From"))
+            {
+                email.From = msg.Headers["From"];
             }
 
-            using (var msg = new ReadOnlyMailMessage(fileContent))
+            ExtractMimeEntityIntoEmail(msg.Body, email);
+        }
+
+        void ExtractMimeEntityIntoEmail(MimeEntity entity, Email email)
+        {
+            if (entity is MessagePart)
             {
-                var email = new Email
+                // TODO: implement attached emails
+            }
+            else if (entity is Multipart)
+            {
+                foreach (var part in (Multipart)entity)
                 {
-                    Date = msg.Date,
-                    From = msg.From.Address,
-                    To = msg.To.ToString(),
-                    Subject = msg.Subject.ToString(),
-                    Body = msg.Body,
-                    IsBodyHtml = msg.IsBodyHtml,
+                    ExtractMimeEntityIntoEmail(part, email);
+                }
+            }
+            else if (entity is TextPart)
+            {
+                var text = (TextPart)entity;
+                bool isHtml = text.ContentType.Matches("text", "html");
+                if (isHtml || string.IsNullOrEmpty(email.Body))
+                {
+                    email.Body = text.Text;
+                    email.IsBodyHtml = isHtml;
+                }
+            }
+            else
+            {
+                email.HasAttachments = true;
+                var part = (MimePart)entity;
+
+                string fileId = Guid.NewGuid().ToString();
+
+                long size;
+                using (var attachmentStream = getAttachmentStreamForSaving(fileId))
+                {
+                    part.ContentObject.DecodeTo(attachmentStream);
+                    size = attachmentStream.Length;
+                }
+
+                bool isImage = part.ContentType.Matches("image", "*");
+                
+                var attachment = new EmailAttachment
+                {
+                    FileId = fileId,
+                    IsAttachment = part.IsAttachment,
+                    IsInlineImage = !part.IsAttachment && isImage,
+                    ContentType = part.ContentType.ToString(),
+                    FileName = part.FileName,
+                    FileSize = size,
                 };
-                db.Insert(email);
+
+                email.Attachments.Add(attachment);
             }
         }
 
         public void CheckAndParse()
         {
+            db.BeginTransaction();
             mailFolderListener.CheckFoldersNow();
+            db.Commit();
         }
     }
 }
