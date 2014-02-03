@@ -13,8 +13,8 @@ Get Started
 The first thing to do it modify your app.config or web.config to have it drop your emails into a folder instead of firing them off to a real SMTP server.
 
     <smtp deliveryMethod="specifiedPickupDirectory>
-		  <specifiedPickupDirectory>C:\somefolder</specifiedPickupDirectory>
-	</smtp>
+        <specifiedPickupDirectory pickupDirectoryLocation="C:\somefolder" />
+    </smtp>
 
 
 Next up, get DevDotMail running in IIS. You must _set your application pool to run in 32-bit mode_. (Right click the app pool, advanced settings, set enable 32-bit applications to true)
