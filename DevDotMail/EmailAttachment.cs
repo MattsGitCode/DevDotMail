@@ -15,6 +15,7 @@ namespace DevDotMail
 
         public bool IsAttachment { get; set; }
         public bool IsInlineImage { get; set; }
+        public string ContentId { get; set; }
 
         public string ContentType { get; set; }
         public string FileName { get; set; }

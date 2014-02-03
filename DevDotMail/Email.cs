@@ -11,6 +11,8 @@ namespace DevDotMail
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
+        public string Folder { get; set; }
+
         public DateTime Date { get; set; }
         [MaxLength(100)]
         public string From { get; set; }

@@ -105,15 +105,16 @@ namespace DevDotMail
                 }
 
                 bool isImage = part.ContentType.Matches("image", "*");
-                
+
                 var attachment = new EmailAttachment
                 {
                     FileId = fileId,
                     IsAttachment = part.IsAttachment,
                     IsInlineImage = !part.IsAttachment && isImage,
-                    ContentType = part.ContentType.ToString(),
+                    ContentType = string.Format("{0}/{1}", part.ContentType.MediaType, part.ContentType.MediaSubtype),
                     FileName = part.FileName,
                     FileSize = size,
+                    ContentId = part.ContentId,
                 };
 
                 email.Attachments.Add(attachment);

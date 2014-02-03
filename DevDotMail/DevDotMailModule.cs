@@ -2,6 +2,7 @@
 using SQLite;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 
@@ -9,7 +10,7 @@ namespace DevDotMail
 {
     public class DevDotMailModule : NancyModule
     {
-        public DevDotMailModule(SQLiteConnection db)
+        public DevDotMailModule(SQLiteConnection db, IRootPathProvider rootPathProvider)
         {
             Get["/"] = _ =>
             {
@@ -51,10 +52,39 @@ namespace DevDotMail
                 {
                     email.Attachments = db.Table<EmailAttachment>()
                         .Where(x => x.EmailId == email.Id)
+                        .Where(x => x.IsAttachment == true)
                         .ToList();
                 }
 
                 return View[email];
+            };
+
+            Get["/cid-{id}"] = _ =>
+            {
+                string id = _.id;
+                var attachment = db.Table<EmailAttachment>()
+                    .Where(x => x.ContentId == id)
+                    .SingleOrDefault();
+
+                if (attachment == null)
+                    return Negotiate.WithStatusCode(HttpStatusCode.NotFound);
+
+                var stream = File.OpenRead(Path.Combine(rootPathProvider.GetRootPath(), "App_Data", attachment.FileId));
+                return Response.FromStream(stream, attachment.ContentType);
+            };
+
+            Get["/attachment-{id}"] = _ =>
+            {
+                int id = _.id;
+                var attachment = db.Table<EmailAttachment>()
+                    .Where(x => x.Id == id)
+                    .SingleOrDefault();
+
+                if (attachment == null)
+                    return Negotiate.WithStatusCode(HttpStatusCode.NotFound);
+
+                var stream = File.OpenRead(Path.Combine(rootPathProvider.GetRootPath(), "App_Data", attachment.FileId));
+                return Response.FromStream(stream, attachment.ContentType);
             };
         }
     }

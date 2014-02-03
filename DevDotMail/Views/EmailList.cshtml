@@ -26,28 +26,37 @@
     </div>
 }
 
-@Pager()
+@if (Model.Emails.Count == 0)
+{
+    <div class="panel panel-default">
+        <div class="panel-body">No emails found</div>
+    </div>
+}
+else
+{
+    @Pager()
 
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th>To</th>
-            <th>Subject</th>
-            <th>Date</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var m in Model.Emails)
-        {
+    <table class="table table-hover">
+        <thead>
             <tr>
-                <td><a href="@Model.Builder.RecipientUrl(m.To)">@m.To</a></td>
-                <td><a href="@Model.Builder.EmailUrl(m.Id)">@(m.Subject ?? "<no subject>")</a></td>
-                <td>@m.Date</td>
-                <td>@if(m.HasAttachments) { <span class="glyphicon glyphicon-paperclip"></span> }</td>
+                <th>To</th>
+                <th>Subject</th>
+                <th>Date</th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var m in Model.Emails)
+            {
+                <tr>
+                    <td><a href="@Model.Builder.RecipientUrl(m.To)">@m.To</a></td>
+                    <td><a href="@Model.Builder.EmailUrl(m.Id)">@(m.Subject ?? "<no subject>")</a></td>
+                    <td>@m.Date</td>
+                    <td>@if(m.HasAttachments) { <span class="glyphicon glyphicon-paperclip"></span> }</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
-@Pager()
+    @Pager()
+}

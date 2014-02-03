@@ -21,7 +21,7 @@
             @foreach (var attachment in Model.Attachments)
             {
                 <tr>
-                    <td>@attachment.FileName</td>
+                    <td><a href="/attachment-@attachment.Id">@attachment.FileName</a></td>
                     <td>@attachment.FileSize.ToReadableSizeString()</td>
                 </tr>
             }

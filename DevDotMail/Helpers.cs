@@ -37,7 +37,9 @@ namespace DevDotMail
 
             string safeBody = Regex.Replace(body, @"<script(?:\s?[^>]*)>(.*?)(?:</\s*script\s*>|$)", string.Empty);
 
-            return new NonEncodedHtmlString(safeBody);
+            string bodyWithEmbeddedImages = Regex.Replace(safeBody, "src=(?:\"?)cid:([^\\s/>\"]*)(\"?)", "src=\"/cid-$1\"");
+
+            return new NonEncodedHtmlString(bodyWithEmbeddedImages);
         }
     }
 }
